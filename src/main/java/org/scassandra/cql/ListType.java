@@ -33,4 +33,8 @@ public class ListType extends CqlType {
     public String toString() {
         return this.serialise();
     }
+
+    public CqlType getType() {
+        return type;
+    }
 }
