@@ -119,6 +119,7 @@ dependencies {
     compile 'org.slf4j:slf4j-api:1.7.10'
     testCompile 'ch.qos.logback:logback-classic:1.1.1'
     testCompile 'org.mockito:mockito-all:1.9.5'
+    testCompile 'junit:junit:4.11'
 }
 
 task wrapper(type: Wrapper) {

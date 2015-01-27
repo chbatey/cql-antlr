@@ -1,3 +1,4 @@
+
 grammar CqlTypes;
 
 options {
