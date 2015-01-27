@@ -1,10 +1,8 @@
-
 grammar CqlTypes;
 
 options {
     language = Java;
 }
-
 
 data_type
     : native_type
