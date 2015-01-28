@@ -1,10 +1,19 @@
 package org.scassandra.cql;
 
+import com.google.common.base.Predicate;
+import com.google.common.collect.Iterables;
+
+import java.util.Map;
+
 public class MapType extends CqlType {
     private CqlType keyType;
     private CqlType valueType;
 
-    public MapType(CqlType keyType, CqlType valueType) {
+    public static MapType map(CqlType keyType, CqlType valueType) {
+        return new MapType(keyType, valueType);
+    }
+
+    MapType(CqlType keyType, CqlType valueType) {
         this.keyType = keyType;
         this.valueType = valueType;
     }
@@ -12,6 +21,34 @@ public class MapType extends CqlType {
     @Override
     public String serialise() {
         return String.format("map<%s,%s>", keyType.serialise(), valueType.serialise());
+    }
+
+    @Override
+    public boolean equals(Object expected, Object actual) {
+        if (expected == null) return actual == null;
+        if (actual == null) return false;
+
+        if (expected instanceof Map) {
+            final Map<?,?> typedExpected = (Map<?, ?>) expected;
+            final Map<?,?> actualMap = (Map<?, ?>) actual;
+
+            if (typedExpected.size() != actualMap.size()) return false;
+
+            for (final Map.Entry<?, ?> eachExpected : typedExpected.entrySet()) {
+                boolean match = Iterables.any(actualMap.keySet(), new Predicate<Object>() {
+                    @Override
+                    public boolean apply(Object eachActualKey) {
+                        Object eachActual = actualMap.get(eachActualKey);
+                        return keyType.equals(eachExpected.getKey(), eachActualKey) && valueType.equals(eachExpected.getValue(), eachActual);
+                    }
+                });
+
+                if (!match) return false;
+            }
+            return true;
+        } else {
+            throw throwInvalidType(expected, actual, this);
+        }
     }
 
     @Override

@@ -1,34 +1,35 @@
 package org.scassandra.cql;
 
+import java.math.BigDecimal;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
-public class PrimitiveType extends CqlType {
+abstract public class PrimitiveType extends CqlType {
 
     private static final Map<String, PrimitiveType> mapping = new HashMap<String, PrimitiveType>();
 
-    public static final PrimitiveType VARCHAR = registerPrimitive("varchar");
-    public static final PrimitiveType TEXT = registerPrimitive("text");
-    public static final PrimitiveType ASCII = registerPrimitive("ascii");
-    public static final PrimitiveType DOUBLE = registerPrimitive("double");
-    public static final PrimitiveType FLOAT = registerPrimitive("float");
-    public static final PrimitiveType INET = registerPrimitive("inet");
-    public static final PrimitiveType INT = registerPrimitive("int");
-    public static final PrimitiveType BIG_INT = registerPrimitive("bigint");
-    public static final PrimitiveType TIMESTAMP = registerPrimitive("timestamp");
-    public static final PrimitiveType TIMEUUID = registerPrimitive("timeuuid");
-    public static final PrimitiveType UUID = registerPrimitive("uuid");
-    public static final PrimitiveType VAR_INT = registerPrimitive("varint");
-    public static final PrimitiveType BLOB = registerPrimitive("blob");
-    public static final PrimitiveType BOOLEAN = registerPrimitive("boolean");
-    public static final PrimitiveType COUNTER = registerPrimitive("counter");
-    public static final PrimitiveType DECIMAL = registerPrimitive("decimal");
+    public static final PrimitiveType VARCHAR = registerPrimitive(new CqlVarchar());
+    public static final PrimitiveType TEXT = registerPrimitive(new CqlText());
+    public static final PrimitiveType ASCII = registerPrimitive(new CqlAscii());
+    public static final PrimitiveType DOUBLE = registerPrimitive(new CqlDouble());
+    public static final PrimitiveType FLOAT = registerPrimitive(new CqlFloat());
+    public static final PrimitiveType INET = registerPrimitive(new CqlInet());
+    public static final PrimitiveType INT = registerPrimitive(new CqlInt());
+    public static final PrimitiveType BIG_INT = registerPrimitive(new CqlBigInt());
+    public static final PrimitiveType TIMESTAMP = registerPrimitive(new CqlTimestamp());
+    public static final PrimitiveType TIMEUUID = registerPrimitive(new CqlTimeuuid());
+    public static final PrimitiveType UUID = registerPrimitive(new CqlUuid());
+    public static final PrimitiveType VAR_INT = registerPrimitive(new CqlVarint());
+    public static final PrimitiveType BLOB = registerPrimitive(new CqlBlob());
+    public static final PrimitiveType BOOLEAN = registerPrimitive(new CqlBoolean());
+    public static final PrimitiveType COUNTER = registerPrimitive(new CqlCounter());
+    public static final PrimitiveType DECIMAL = registerPrimitive(new CqlDecimal());
 
     private final String columnType;
 
-    private static PrimitiveType registerPrimitive(String type) {
-        PrimitiveType primitiveType = new PrimitiveType(type);
-        mapping.put(type, primitiveType);
+    private static PrimitiveType registerPrimitive(PrimitiveType primitiveType) {
+        mapping.put(primitiveType.serialise(), primitiveType);
         return primitiveType;
     }
 
@@ -36,7 +37,7 @@ public class PrimitiveType extends CqlType {
         return mapping.get(name);
     }
 
-    private PrimitiveType(String columnType) {
+    PrimitiveType(String columnType) {
         this.columnType = columnType;
     }
 
@@ -49,4 +50,82 @@ public class PrimitiveType extends CqlType {
     public String toString() {
         return serialise();
     }
+
+    @Override
+    public boolean equals(Object expected, Object actual) {
+        return false;
+    }
+
+    protected boolean equalsForLongType(Object expected, Object actual, CqlType columnTypes) {
+
+        if (expected == null) return actual == null;
+        if (actual == null) return false;
+
+        Long typedActual = ((Double) actual).longValue();
+
+        if (expected instanceof Integer) {
+            return ((Integer) expected).longValue() == typedActual;
+        } else if (expected instanceof Long) {
+            return expected == typedActual;
+        } else if (expected instanceof BigInteger) {
+            return expected.equals(new BigInteger(typedActual.toString()));
+        } else if (expected instanceof String) {
+            return compareStringInteger(expected, typedActual, columnTypes);
+        } else {
+            throw throwInvalidType(expected, actual, columnTypes);
+        }
+    }
+
+    protected boolean compareStringInteger(Object expected, Long actual, CqlType instance) {
+        try {
+            return new BigInteger((String) expected).equals(new BigInteger(actual.toString()));
+        } catch (NumberFormatException e) {
+            throw throwInvalidType(expected, actual, instance);
+        }
+    }
+    protected IllegalArgumentException throwNullError(Object actual, CqlType instance) {
+        return new IllegalArgumentException(String.format("Invalid expected value (null) for variable of types %s, the value was %s for valid types see: %s",
+                instance.serialise(),
+                actual,
+                "http://www.scassandra.org/java-client/column-types/"
+        ));
+    }
+
+    protected boolean equalsDecimalType(Object expected, Object actual, CqlType columnTypes) {
+        if (expected == null) {
+            throw throwNullError(actual, columnTypes);
+        } else if (actual == null) {
+            return false;
+        }
+
+        if (expected instanceof String) {
+            try {
+                return (new BigDecimal(expected.toString()).compareTo(new BigDecimal(actual.toString())) == 0);
+            } catch (NumberFormatException e) {
+                throw throwInvalidType(expected, actual, columnTypes);
+            }
+        } else if (expected instanceof BigDecimal) {
+            return ((BigDecimal) expected).compareTo(new BigDecimal(actual.toString())) == 0;
+        } else {
+            throw throwInvalidType(expected, actual, columnTypes);
+        }
+    }
+
+    protected boolean equalsForUUID(Object expected, Object actual, CqlType columnTypes) {
+        if (expected == null) return actual == null;
+        if (actual == null) return false;
+
+        if (expected instanceof String) {
+            try {
+                return java.util.UUID.fromString(expected.toString()).equals(java.util.UUID.fromString(actual.toString()));
+            } catch (Exception e) {
+                throw throwInvalidType(expected, actual, columnTypes);
+            }
+        } else if (expected instanceof java.util.UUID) {
+            return expected.toString().equals(actual);
+        } else {
+            throw throwInvalidType(expected, actual, columnTypes);
+        }
+    }
+
 }

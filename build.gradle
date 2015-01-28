@@ -117,6 +117,8 @@ uploadArchives {
 dependencies {
     compile 'org.antlr:antlr4-runtime:4.5'
     compile 'org.slf4j:slf4j-api:1.7.10'
+    compile 'commons-codec:commons-codec:1.10'
+    compile 'com.google.guava:guava:17.0'
     testCompile 'ch.qos.logback:logback-classic:1.1.1'
     testCompile 'org.mockito:mockito-all:1.9.5'
     testCompile 'junit:junit:4.11'
