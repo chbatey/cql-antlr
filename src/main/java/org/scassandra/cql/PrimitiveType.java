@@ -2,7 +2,6 @@ package org.scassandra.cql;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
-import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.Map;
 
