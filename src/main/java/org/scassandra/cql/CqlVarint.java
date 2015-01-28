@@ -11,7 +11,7 @@ public class CqlVarint extends PrimitiveType {
         if (expected == null) return actual == null;
         if (actual == null) return expected == null;
 
-        Long typedActual = ((Double) actual).longValue();
+        Long typedActual = getActualValueLong(actual);
 
         if (expected instanceof BigInteger) {
             return expected.equals(new BigInteger(typedActual.toString()));

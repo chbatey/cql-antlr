@@ -2,6 +2,7 @@ package org.scassandra.cql;
 
 import java.math.BigDecimal;
 import java.math.BigInteger;
+import java.util.DoubleSummaryStatistics;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -61,7 +62,7 @@ abstract public class PrimitiveType extends CqlType {
         if (expected == null) return actual == null;
         if (actual == null) return false;
 
-        Long typedActual = ((Double) actual).longValue();
+        Long typedActual = getActualValueLong(actual);
 
         if (expected instanceof Integer) {
             return ((Integer) expected).longValue() == typedActual;
@@ -73,6 +74,14 @@ abstract public class PrimitiveType extends CqlType {
             return compareStringInteger(expected, typedActual, columnTypes);
         } else {
             throw throwInvalidType(expected, actual, columnTypes);
+        }
+    }
+
+    protected long getActualValueLong(Object actual) {
+        if (actual instanceof Double) {
+            return ((Double) actual).longValue();
+        } else {
+            return Long.parseLong(actual.toString());
         }
     }
 

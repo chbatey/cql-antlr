@@ -53,6 +53,7 @@ public class CqlTypesEqualsTest {
                 {VARCHAR, "one", null, NO_MATCH},
                 {VARCHAR, null, "two", NO_MATCH},
 
+                {BIG_INT, 1, "1", MATCH},
                 {BIG_INT, 1, 1d, MATCH},
                 {BIG_INT, 1l, 1d, MATCH},
                 {BIG_INT, new BigInteger("1"), 1d, MATCH},
@@ -60,6 +61,7 @@ public class CqlTypesEqualsTest {
                 {BIG_INT, null, 1d, NO_MATCH},
                 {BIG_INT, "hello", 1d, ILLEGAL_ARGUMENT},
 
+                {COUNTER, 1, "1", MATCH},
                 {COUNTER, 1, 1d, MATCH},
                 {COUNTER, 1l, 1d, MATCH},
                 {COUNTER, new BigInteger("1"), 1d, MATCH},
@@ -68,6 +70,7 @@ public class CqlTypesEqualsTest {
                 {COUNTER, null, new BigInteger("1"), NO_MATCH},
                 {COUNTER, "hello", 1d, ILLEGAL_ARGUMENT},
 
+                {INT, 1, "1", MATCH},
                 {INT, 1, 1d, MATCH},
                 {INT, "1", 1d, MATCH},
                 {INT, new BigInteger("1"), 1d, MATCH},
@@ -75,6 +78,7 @@ public class CqlTypesEqualsTest {
                 {INT, null, 1, NO_MATCH},
                 {INT, "hello", 1d, ILLEGAL_ARGUMENT},
 
+                {VAR_INT, "1", "1", MATCH},
                 {VAR_INT, "1", 1d, MATCH},
                 {VAR_INT, new BigInteger("1"), 1d, MATCH},
 
@@ -85,6 +89,7 @@ public class CqlTypesEqualsTest {
                 {VAR_INT, 1l, 1d, ILLEGAL_ARGUMENT},
                 {VAR_INT, "hello", 1d, ILLEGAL_ARGUMENT},
 
+                {BOOLEAN, true, "true", MATCH},
                 {BOOLEAN, true, true, MATCH},
                 {BOOLEAN, false, false, MATCH},
 
@@ -145,6 +150,7 @@ public class CqlTypesEqualsTest {
                 {DOUBLE, "hello", new BigInteger("1"), ILLEGAL_ARGUMENT},
                 {DOUBLE, "hello", 1, ILLEGAL_ARGUMENT},
 
+                {TIMESTAMP, 1l, "1", MATCH},
                 {TIMESTAMP, 1l, 1d, MATCH},
                 {TIMESTAMP, new Date(1l), 1d, MATCH},
                 {TIMESTAMP, null, 1d, NO_MATCH},

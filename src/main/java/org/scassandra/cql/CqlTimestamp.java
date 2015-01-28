@@ -9,7 +9,7 @@ public class CqlTimestamp extends PrimitiveType {
 
     @Override
     public boolean equals(Object expected, Object actual) {
-        Long typedActualValue = ((Double) actual).longValue();
+        Long typedActualValue = getActualValueLong(actual);
 
         if (expected == null) return actual == null;
         if (actual == null) return expected == null;
