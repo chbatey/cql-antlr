@@ -10,8 +10,12 @@ buildscript {
             name 'JFrog OSS snapshot repo'
             url  'https://oss.jfrog.org/oss-snapshot-local/'
         }
+        mavenCentral()
+        maven { url "https://oss.sonatype.org/content/groups/public"}
+
     }
     dependencies {
+        classpath 'com.github.townsfolk:gradle-release:1.2'
         classpath 'com.github.jengelman.gradle.plugins:shadow:1.2.0'
         classpath 'me.champeau.gradle:antlr4-gradle-plugin:0.1'
     }
@@ -19,7 +23,9 @@ buildscript {
 
 apply plugin: 'me.champeau.gradle.antlr4'
 apply plugin: 'com.github.johnrengelman.shadow'
+apply plugin: 'release'
 
+createReleaseTag.dependsOn uploadArchives
 group 'org.scassandra'
 jar.baseName = 'cql-antlr'
 
@@ -35,26 +41,14 @@ if (!project.hasProperty("ossrhPassword")) {
     ext.ossrhPassword = "dummy"
 }
 
-repositories {
-    mavenLocal()
-    mavenCentral()
-    maven {
-        url "https://oss.sonatype.org/content/repositories/snapshots"
-    }
-    maven {
-        url "https://oss.sonatype.org/content/groups/staging"
-    }
+task javadocJar(type: Jar) {
+    classifier = 'javadoc'
+    from javadoc
 }
 
 task sourceJar(type: Jar) {
     classifier = 'sources'
-    baseName = 'cql-antlr'
-    from sourceSets.main.allJava
-}
-task javadocJar(type: Jar, dependsOn: javadoc) {
-    classifier = 'javadoc'
-    baseName = 'cql-antlr'
-    from 'build/docs/javadoc'
+    from sourceSets.main.allSource
 }
 
 artifacts {
@@ -86,7 +80,7 @@ uploadArchives {
                 name 'Scassandra CQL antlr'
                 packaging 'jar'
                 // optionally artifactId can be defined here
-                description 'Allows Java applications to use Scassandra'
+                description 'CQL Types'
                 url 'https://github.com/chbatey/cql-antlr'
 
                 scm {
@@ -113,6 +107,19 @@ uploadArchives {
         }
     }
 }
+
+
+repositories {
+    mavenLocal()
+    mavenCentral()
+    maven {
+        url "https://oss.sonatype.org/content/repositories/snapshots"
+    }
+    maven {
+        url "https://oss.sonatype.org/content/groups/staging"
+    }
+}
+
 
 dependencies {
     compile 'org.antlr:antlr4-runtime:4.5'
