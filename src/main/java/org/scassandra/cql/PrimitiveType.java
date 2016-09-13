@@ -66,7 +66,7 @@ abstract public class PrimitiveType extends CqlType {
         if (expected instanceof Integer) {
             return ((Integer) expected).longValue() == typedActual;
         } else if (expected instanceof Long) {
-            return expected == typedActual;
+            return expected.equals(typedActual);
         } else if (expected instanceof BigInteger) {
             return expected.equals(new BigInteger(typedActual.toString()));
         } else if (expected instanceof String) {

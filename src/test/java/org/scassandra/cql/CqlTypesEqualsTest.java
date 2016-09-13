@@ -56,6 +56,7 @@ public class CqlTypesEqualsTest {
                 {BIG_INT, 1, "1", MATCH},
                 {BIG_INT, 1, 1d, MATCH},
                 {BIG_INT, 1l, 1d, MATCH},
+                {BIG_INT, new Long("1"), new Long("1"), MATCH},
                 {BIG_INT, new BigInteger("1"), 1d, MATCH},
 
                 {BIG_INT, null, 1d, NO_MATCH},
