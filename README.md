@@ -1,4 +1,6 @@
-![TravisCI](https://travis-ci.org/chbatey/cql-antlr.svg?branch=master)
+# Repository deprecated, merged into [scassandra-server](https://github.com/scassandra/scassandra-server/tree/master/cql-antlr)
+
+**Note**: This repository has been moved into the scassandra-server repo as a submodule.  All active development will be done there.
 
 The start of a library to parse the Cassandra Query Language. 
 
