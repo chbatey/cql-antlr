@@ -19,6 +19,7 @@ public class CqlBlob extends PrimitiveType {
             ByteBuffer bb = (ByteBuffer) expected;
             byte[] b = new byte[bb.remaining()];
             bb.get(b);
+            bb.flip();
             String encodedExpected = Hex.encodeHexString(b);
             String actualWithout0x = actual.toString().replaceFirst("0x", "");
             return encodedExpected.equals(actualWithout0x);
