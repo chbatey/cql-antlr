@@ -25,6 +25,10 @@ abstract public class PrimitiveType extends CqlType {
     public static final PrimitiveType BOOLEAN = registerPrimitive(new CqlBoolean());
     public static final PrimitiveType COUNTER = registerPrimitive(new CqlCounter());
     public static final PrimitiveType DECIMAL = registerPrimitive(new CqlDecimal());
+    public static final PrimitiveType DATE = registerPrimitive(new CqlDate());
+    public static final PrimitiveType SMALL_INT = registerPrimitive(new CqlSmallInt());
+    public static final PrimitiveType TIME = registerPrimitive(new CqlTime());
+    public static final PrimitiveType TINY_INT = registerPrimitive(new CqlTinyInt());
 
     private final String columnType;
 
